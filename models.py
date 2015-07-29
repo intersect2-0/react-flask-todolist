@@ -25,7 +25,7 @@ class SiteUsers(db.Model):
         return str(self.id)
 
     def __repr__(self):
-        return '<User: {}'.format(self.username)
+        return 'User: {}'.format(self.username)
 
 
 class Todo(db.Model):
@@ -37,3 +37,6 @@ class Todo(db.Model):
     done = db.Column(db.Boolean, default=False)
 
     user_id = db.Column(db.Integer, db.ForeignKey('siteusers.id'))
+
+    def __repr__(self):
+        return self.text
