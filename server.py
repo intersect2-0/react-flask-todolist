@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.login import LoginManager, login_required, flash, current_user, login_user
+from flask.ext.login import LoginManager, login_required,\
+    flash, current_user, login_user, logout_user
 
 app = Flask(__name__)
 app.config.from_object('config')
@@ -34,7 +35,15 @@ def login():
     if registered_user is None:
         return redirect(url_for('login'))
 
+    next = request.args.get('next')
+    #TODO validate next
     login_user(registered_user)
+    return redirect(next or url_for('index'))
+
+
+@app.route('/logout')
+def logout():
+    logout_user()
     return redirect(url_for('index'))
 
 

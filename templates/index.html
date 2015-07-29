@@ -7,8 +7,10 @@
 <body>
 {% if current_user.is_authenticated() %}
   Hi {{ current_user.username }}!
+  <br>
+  <a href="{{ url_for('logout') }}">Logout</a>
 {% else %}
-    jdd
+    <a href="{{ url_for('login')}}">Login</a>
 {% endif %}
 </body>
 </html>
