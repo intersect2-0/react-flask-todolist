@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import LoginManager, login_required,\
     flash, current_user, login_user, logout_user
+import json
 
 app = Flask(__name__)
 app.config.from_object('config')
@@ -42,6 +43,7 @@ def login():
 
 
 @app.route('/logout')
+@login_required
 def logout():
     logout_user()
     return redirect(url_for('index'))
@@ -59,3 +61,20 @@ def signup():
     db.session.add(user)
     db.session.commit()
     return redirect(url_for('login'))
+
+
+@app.route('/todolist')
+@login_required
+def todolist():
+    class MyEncoder(json.JSONEncoder):
+        def default(self, o):
+            if isinstance(o, Todo):
+                mydict = {}
+                mydict['id'] = o.id
+                mydict['text'] = o.text
+                mydict['done'] = o.done
+                mydict['date'] = o.created_on.isoformat()
+                return mydict
+            # Let the base class default method raise the TypeError
+            return json.JSONEncoder.default(self, o)
+    return json.dumps(current_user.todos.all(), cls=MyEncoder)
