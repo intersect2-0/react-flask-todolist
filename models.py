@@ -24,4 +24,4 @@ class SiteUsers(db.Model):
         return self.id
 
     def __repr__(self):
-        return '<User: {}'.format(self.caption)
+        return '<User: {}'.format(self.username)
