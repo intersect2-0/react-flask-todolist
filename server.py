@@ -47,3 +47,15 @@ def logout():
     return redirect(url_for('index'))
 
 
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'GET':
+        return render_template('signup.html')
+
+    username = request.form['username']
+    email = request.form['email']
+    password = request.form['password']
+    user = SiteUsers(username=username, email=email, password=password)
+    db.session.add(user)
+    db.session.commit()
+    return redirect(url_for('login'))
