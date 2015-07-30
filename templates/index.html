@@ -3,6 +3,10 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title></title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/JSXTransformer.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
 </head>
 <body>
 {% if current_user.is_authenticated() %}
@@ -13,5 +17,85 @@
     <a href="{{ url_for('login')}}">Login</a>
     <a href="{{ url_for('signup') }}">Sign Up</a>
 {% endif %}
+<br>
+    <div id="content"></div>
+    <script type="text/jsx">
+      var TodoBox = React.createClass({
+           loadCommentsFromServer: function() {
+            $.ajax({
+              url: this.props.url,
+              dataType: 'json',
+              cache: false,
+              success: function(data) {
+                this.setState({data: data});
+              }.bind(this),
+              error: function(xhr, status, err) {
+                console.error(this.props.url, status, err.toString());
+              }.bind(this)
+            });
+          },
+          getInitialState: function() {
+              return {data: []}
+          },
+          componentDidMount: function() {
+            this.loadCommentsFromServer();
+            //setInterval(this.loadCommentsFromServer, this.props.pollInterval)
+          },
+          render: function() {
+              return (
+                      <div className = "todoBox">
+                              <h1>Todo</h1>
+                              <TodoList  data={this.state.data}/>
+                              <TodoForm />
+                      </div>
+              );
+          }
+      });
+
+      var TodoForm = React.createClass({
+          render: function(){
+              return (
+                      <div className="todoForm">
+                              Hello, world! I am a TodoForm.
+                      </div>
+              );
+          }
+      });
+
+      var TodoList = React.createClass({
+          render: function() {
+              var itemNodes = this.props.data.map(function (item) {
+                  return (
+                          <TodoItem date={item.date}>
+                          {item.text}
+                          </TodoItem>
+                  );
+              });
+              return (
+                      <div className="todoList">
+                      {itemNodes}
+                      </div>
+              );
+          }
+      });
+
+      var TodoItem = React.createClass({
+          render: function() {
+              return (
+                      <div className="todoItem">
+                              <h1 className="itemText">
+                              {this.props.children}
+                              </h1>
+                              {this.props.date}
+                      </div>
+              );
+          }
+      });
+      React.render(
+              <TodoBox url="/todolist" pollInterval={2000}/>,
+              document.getElementById('content')
+      );
+
+    </script>
 </body>
 </html>
