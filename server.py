@@ -63,7 +63,7 @@ def signup():
     return redirect(url_for('login'))
 
 
-@app.route('/todolist')
+@app.route('/todolist', methods=['GET', 'POST'])
 @login_required
 def todolist():
     class MyEncoder(json.JSONEncoder):
@@ -77,4 +77,11 @@ def todolist():
                 return mydict
             # Let the base class default method raise the TypeError
             return json.JSONEncoder.default(self, o)
+    if request.method == 'POST':
+        text = request.form['text']
+        if text:
+            item = Todo(text=text)
+            item.user = current_user
+            db.session.add(item)
+            db.session.commit()
     return json.dumps(current_user.todos.all(), cls=MyEncoder)

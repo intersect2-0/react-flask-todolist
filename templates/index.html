@@ -21,11 +21,25 @@
     <div id="content"></div>
     <script type="text/jsx">
       var TodoBox = React.createClass({
-           loadCommentsFromServer: function() {
+          loadCommentsFromServer: function() {
             $.ajax({
               url: this.props.url,
               dataType: 'json',
               cache: false,
+              success: function(data) {
+                this.setState({data: data});
+              }.bind(this),
+              error: function(xhr, status, err) {
+                console.error(this.props.url, status, err.toString());
+              }.bind(this)
+            });
+          },
+          handleItemSubmit: function(item){
+            $.ajax({
+              url: this.props.url,
+              dataType: 'json',
+              type: 'POST',
+              data: item,
               success: function(data) {
                 this.setState({data: data});
               }.bind(this),
@@ -46,18 +60,27 @@
                       <div className = "todoBox">
                               <h1>Todo</h1>
                               <TodoList  data={this.state.data}/>
-                              <TodoForm />
+                              <TodoForm onItemSubmit={this.handleItemSubmit}/>
                       </div>
               );
           }
       });
 
       var TodoForm = React.createClass({
+          handleSubmit: function(e) {
+              e.preventDefault();
+              var text = React.findDOMNode(this.refs.text).value.trim();
+              if (!text) return;
+              this.props.onItemSubmit({text: text});
+              React.findDOMNode(this.refs.text).value = '';
+              return;
+          },
           render: function(){
               return (
-                      <div className="todoForm">
-                              Hello, world! I am a TodoForm.
-                      </div>
+                      <form className="todoForm" onSubmit={this.handleSubmit}>
+                          <input type="text" placeholder="What's up?"  ref="text"/>
+                          <input type="submit" value="Post" />
+                      </form>
               );
           }
       });
