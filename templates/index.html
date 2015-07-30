@@ -35,6 +35,9 @@
             });
           },
           handleItemSubmit: function(item){
+            var items = this.state.data;
+            var newItems = items.concat([item]);
+            this.setState({data: newItems});
             $.ajax({
               url: this.props.url,
               dataType: 'json',
