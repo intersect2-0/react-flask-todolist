@@ -85,3 +85,11 @@ def todolist():
             db.session.add(item)
             db.session.commit()
     return json.dumps(current_user.todos.all(), cls=MyEncoder)
+
+
+@app.route('/toggle')
+@login_required
+def toggle():
+    current_user.todos.filter_by(id=int(request.args['id'])).first().done ^= True
+    db.session.commit()
+    return "Toggled"

@@ -1,6 +1,6 @@
 (function () {
   var TodoBox = React.createClass({
-      loadCommentsFromServer: function() {
+      loadItemsFromServer: function() {
         $.ajax({
           url: this.props.url,
           dataType: 'json',
@@ -34,8 +34,7 @@
           return {data: []}
       },
       componentDidMount: function() {
-        this.loadCommentsFromServer();
-        //setInterval(this.loadCommentsFromServer, this.props.pollInterval)
+        this.loadItemsFromServer();
       },
       render: function() {
           return (
@@ -71,8 +70,7 @@
       render: function() {
           var itemNodes = this.props.data.map(function (item) {
               return (
-                      <TodoItem date={item.date}>
-                      {item.text}
+                      <TodoItem itemdata={item}>
                       </TodoItem>
               );
           });
@@ -85,19 +83,31 @@
   });
 
   var TodoItem = React.createClass({
+      getInitialState: function() {
+          return {
+            isChecked: this.props.itemdata.done
+          };
+      },
+      handleDoneChange: function(event){
+          //console.log(event.target.value);
+          $.get('/toggle', {id: this.props.itemdata.id});
+          this.setState({isChecked: !this.state.isChecked});
+      },
       render: function() {
           return (
-                  <div className="todoItem">
-                          <h1 className="itemText">
-                          {this.props.children}
+                  <div className="todoItem" data-todoid={this.props.itemdata.id}>
+                      <h1 className="itemText">
+                        <input type="checkbox" checked={this.state.isChecked} onChange={this.handleDoneChange} />
+
+                          {this.props.itemdata.text}
                           </h1>
-                          {this.props.date}
+                          {this.props.itemdata.date}
                   </div>
           );
       }
   });
   React.render(
-          <TodoBox url="/todolist" pollInterval={2000}/>,
+          <TodoBox url="/todolist" />,
           document.getElementById('content')
   );
 
