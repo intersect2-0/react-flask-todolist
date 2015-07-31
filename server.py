@@ -73,7 +73,7 @@ def todolist():
                 mydict['id'] = o.id
                 mydict['text'] = o.text
                 mydict['done'] = o.done
-                mydict['date'] = o.created_on.isoformat()
+                mydict['date'] = o.created_on.date().isoformat()
                 return mydict
             # Let the base class default method raise the TypeError
             return json.JSONEncoder.default(self, o)
@@ -84,7 +84,7 @@ def todolist():
             item.user = current_user
             db.session.add(item)
             db.session.commit()
-    return json.dumps(current_user.todos.all(), cls=MyEncoder)
+    return json.dumps(current_user.todos.order_by(Todo.done, Todo.created_on.desc()).all(), cls=MyEncoder)
 
 
 @app.route('/toggle')

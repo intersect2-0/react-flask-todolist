@@ -15,7 +15,7 @@
       },
       handleItemSubmit: function(item){
         var items = this.state.data;
-        var newItems = items.concat([item]);
+        var newItems = [item].concat(items);
         this.setState({data: newItems});
         $.ajax({
           url: this.props.url,
