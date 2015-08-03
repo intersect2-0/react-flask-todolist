@@ -33,7 +33,7 @@ class Todo(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.UnicodeText)
-    created_on = db.Column(db.DateTime, default=datetime.datetime.now())
+    created_on = db.Column(db.DateTime, default=datetime.datetime.now)
     done = db.Column(db.Boolean, default=False)
 
     user_id = db.Column(db.Integer, db.ForeignKey('siteusers.id'))
