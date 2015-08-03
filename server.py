@@ -93,3 +93,11 @@ def toggle():
     current_user.todos.filter_by(id=int(request.args['id'])).first().done ^= True
     db.session.commit()
     return "Toggled"
+
+
+@app.route('/delete/<int:itemid>', methods=['DELETE'])
+@login_required
+def delete(itemid):
+    db.session.delete(current_user.todos.filter_by(id=itemid).first())
+    db.session.commit()
+    return "Success"
